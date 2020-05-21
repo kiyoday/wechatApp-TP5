@@ -11,5 +11,4 @@
 
 use think\Route;
 
-//Route::rule('hello','sample/Test/hello');
-Route::post('hello/:id','sample/Test/hello');
+Route::get('banner/:id','api/V1.Banner/getBanner');
