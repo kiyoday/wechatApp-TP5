@@ -17,16 +17,12 @@ class BaseValidate extends Validate
         $request = Request::instance();
         $params = $request->param();//拿到参数
 
-        $result = $this->check($params);
+        $result = $this->batch()->check($params);
         if(!$result){
             $e = new ParameterExcption([
                 'msg'=>$this->getError(),
             ]);
-//            $e->msg = $this->getError();
-//            $e->errorCode = 10002;
             throw $e;
-//            $error = $this->getError();
-//            throw new Exception($error);
         }else{
             return true;
         }

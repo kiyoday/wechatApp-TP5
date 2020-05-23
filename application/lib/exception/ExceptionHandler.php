@@ -15,7 +15,7 @@ class ExceptionHandler extends Handle
     private $msg;
     private $errorCode;
     //需要返回客户端当前请求的URL路径
-   public function render(Exception $e){
+   public function render(\Exception $e){
        if($e instanceof BaseException){
            //如果是自定义的异常
            $this->code=$e->code;
