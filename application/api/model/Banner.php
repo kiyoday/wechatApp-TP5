@@ -12,9 +12,6 @@ class Banner extends BaseModel
         return $this->hasMany('BannerItem','banner_id','id');
     }
 
-    public function items1(){
-
-    }
 
     public static function getBannerByID($id){
         //TODO:根据banner id号获取banner信息
