@@ -11,11 +11,11 @@ use think\Exception;
 
 class Banner
 {
-    /*获取指定id的banner信息
-    @id banner的id号
-    @url /banner/:id
-    @http Get
-    */
+    /**获取指定id的banner信息
+     * @id banner的id号
+     * @url /banner/:id
+     * @http Get
+     **/
     public function getBanner($id){
         (new IDMustBePostiveInt())->goCheck();//拦截器
         $banner = BannerModel::getBannerByID($id);
