@@ -15,9 +15,10 @@ class Product
     public function getRecent($count=15){
         (new Count())->goCheck();
         $product = ProductModel::getMostRecent($count);
-        if(!$product){
+        if($product->isEmpty()){
             throw new ProductException();
         }
+        $product = $product->hidden(['summary']);
         return $product;
     }
 }
