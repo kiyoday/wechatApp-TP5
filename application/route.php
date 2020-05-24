@@ -21,4 +21,7 @@ Route::get('api/:version/product/by_category','api/:version.Product/getALLInCate
 
 Route::get('api/:version/category/all','api/:version.Category/getAllCategories');
 
+//获取令牌，post稍微会提升安全性
+Route::post('api/:version/token/user','api/:version.Token/getToken');
+
 
