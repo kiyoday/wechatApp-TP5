@@ -13,6 +13,8 @@ class Token
         (new TokenGet())->goCheck();
         $ut = new UserToken($code);
         $token = $ut->get();
-        return $token;
+        return [//返回json格式
+            '$token'=>$token
+        ];
     }
 }

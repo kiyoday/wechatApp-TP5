@@ -4,10 +4,13 @@
 namespace app\api\service;
 
 
+use app\api\model\User;
+use app\lib\exception\TokenException;
 use app\lib\exception\WeChatException;
 use think\Exception;
+use app\api\model\User as UserModel;
 
-class UserToken
+class UserToken extends Token
 {
     protected $code;
     protected $wxAppID;
@@ -16,7 +19,7 @@ class UserToken
 
     function __construct($code){
         $this->code = $code;
-        $this->wxAppID = config('wx.appid');
+        $this->wxAppID = config('wx.app_id');
         $this->wxAppSecret = config('wx.app_sercet');
         $this->wxLoginUrl = sprintf(config('wx.login_url'),
             $this->wxAppID,$this->wxAppSecret,$this->code);
@@ -32,7 +35,7 @@ class UserToken
             if($loginFail){
                 $this->processLoginError($wxResult);
             }else{
-                $this->grantToken($wxResult);
+                return $this->grantToken($wxResult);
             }
         }
     }
@@ -43,10 +46,51 @@ class UserToken
         //不存在则新增一条数据
         //生成令牌，准备缓存数据，写入缓存
         //把令牌返回到客户端去
+        //value = wxResult, uid, scope
         $openid = $wxResult['openid'];
-        return 'success';
+        $user = UserModel::getByOpenID($openid);
+        if($user){
+            $uid = $user->id;
+        }else{
+            $uid = $this->newUser($openid);
+        }
+        $cacheValue = $this->prepareCacheValue($wxResult,$uid);
+        $token = $this->saveToCache($cacheValue);
+        return $token;
     }
 
+    private function saveToCache($cacheValue){
+        $key = self::generateToken();//生成令牌
+        $value = json_encode($cacheValue);
+        $expire_in = config('setting.token_expire_in');//过期时间
+        //TP5自带缓存,统一cache配置缓存|文件缓存|redis等
+        $request = cache($key, $value, $expire_in);
+        if(!$request){
+            throw new TokenException([
+                'msg' => '服务器缓存异常',
+                '$errorCode' => 10005,
+            ]);
+        }
+        return $key;//返回的是token
+    }
+
+    //准备缓存openid,封装$cacheValue
+    private function prepareCacheValue($wxResult, $uid){
+        $cacheValue = $wxResult;
+        $cacheValue['uid'] = $uid;
+        $cacheValue['scope'] = 16;//权限
+        return $cacheValue;
+    }
+
+    //没有openid则新增用户
+    private function newUser($openid){
+        $user = UserModel::create([
+            'openid'=>$openid,
+        ]);
+        return $user->id;
+    }
+
+    //处理登录异常
     private function processLoginError($wxResult){
         throw new WeChatException([
             'msg'=>$wxResult['errmsg'],

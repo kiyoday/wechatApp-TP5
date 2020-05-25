@@ -32,7 +32,7 @@ class Theme extends Controller
     public function getComplexOne($id){
         (new IDMustBePostiveInt())->gocheck();
         $theme = ThemeModel::getThemeWithProducts($id);
-        if($theme->isEmpty()){
+        if(!$theme){
             throw new ThemeException();
         }
         return $theme;
