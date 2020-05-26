@@ -28,5 +28,7 @@ class Order extends Controller
 
     public function placeOrder(){
         (new OrderPlace())->goCheck();
+        $products = input('post.products/a');//获取数组参数
+        $uid = TokenService::getCurrentUid();
     }
 }
