@@ -4,10 +4,13 @@
 namespace app\api\service;
 
 
+use app\api\model\OrderProduct;
 use app\api\model\Product;
 use app\api\model\UserAddress;
 use app\lib\exception\OrderException;
 use app\lib\exception\UserException;
+use \app\api\model\Order as OrderModel;
+use think\Exception;
 
 class Order
 {
@@ -16,7 +19,7 @@ class Order
 
     //真实的商品信息（包含库存量）
     protected $products;
-    //对比订单和数据库
+    //对比订单和数据库 并生成订单
     public function place($uid, $oProducts){
         //对比$oProducts和$products
         //$products 数据库查询出来
@@ -29,7 +32,53 @@ class Order
             return $status;
         }
         //开始创建订单
-        $orderSnap = $this->snapOrder();
+        $orderSnap = $this->snapOrder($status);
+        $order = createOrder($orderSnap);
+        $order['pass'] = true;
+        return $order;
+    }
+
+    //创建订单
+    private function createOrder($snap){
+        try{
+            $orderNo = $this->makeOrderNo();
+            $order = new OrderModel();
+            $order->user_id = $this->uid;
+            $order->order_no = $orderNo;
+            $order->total_price = $snap['orderPrice'];
+            $order->total_count = $snap['totalCount'];
+            $order->snap_img = $snap['snapImg'];
+            $order->snap_name = $snap['snapName'];
+            $order->snap_address = $snap['snapAddress'];
+            $order->snap_items = json_encode($snap['pStatus']);
+            $order->save();
+
+            $orderID = $order->id;
+            $create_time = $order->create_time;
+            foreach ($this->oProducts as &$p) {
+                $p['order_id'] = $orderID;
+            }
+            $orderProduct = new OrderProduct();
+            $orderProduct->saveAll($this->oProducts);
+            return [
+                'order_no' => $orderNo,
+                'order_id' => $orderID,
+                'create_time' => $create_time,
+            ];
+        }
+        catch(Exception $ex){
+            throw $ex;
+        }
+    }
+
+    //生成订单编号
+    public static function makeOrderNo(){
+        $yCode = array('A','B','C','D','E','F','G','H','I','J');
+        $orderSn =
+            $yCode[intval(data('Y')) - 2017] . strtoupper(dechex(data('m'))) .
+            data('d') . substr(time() - 5) . substr(microtime(),2,5) .
+            sprintf('%02d',rand(0, 99));
+        return $orderSn;
     }
 
     //生成订单快照

@@ -5,6 +5,7 @@ namespace app\api\controller\V1;
 
 use app\api\service\Token as TokenService;
 use app\api\validate\OrderPlace;
+use app\api\service\Order as OrderService;
 use app\lib\enum\ScopeEnum;
 use app\lib\exception\ForbiddenException;
 use app\lib\exception\TokenException;
@@ -30,5 +31,9 @@ class Order extends Controller
         (new OrderPlace())->goCheck();
         $products = input('post.products/a');//获取数组参数
         $uid = TokenService::getCurrentUid();
+
+        $order = new OrderService();
+        $status = $order->place($uid,$products);
+        return $status;
     }
 }
