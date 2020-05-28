@@ -72,4 +72,15 @@ class Token
             throw new ForbiddenException();
         }
     }
+
+    public static function isValidOperate($checkedUID){
+        if(!$checkedUID){
+            throw new Exception('检测UID时必须传入一个UID');
+        }
+        $currentOperateUID = self::getCurrentUid();
+        if($currentOperateUID){
+            return true;
+        }
+        return false;
+    }
 }
