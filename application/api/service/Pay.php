@@ -78,7 +78,7 @@ class Pay
     //签名 timeStamp nonceStr package signType  paySign
     private function sign($wxOrder){
         $jsApiPayData = new \WxPayJsApiPay();
-        $jsApiPayData->SetAppid(config('wx_app_id'));
+        $jsApiPayData->SetAppid(config('wx.app_id'));
         $jsApiPayData->SetTimeStamp((string)time());
         //生成随机字符串
         $rand = md5(time().mt_rand(0,1000));
