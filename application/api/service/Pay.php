@@ -57,7 +57,7 @@ class Pay
         $wxOrderData->SetTotal_fee($totalPrice*100);//以分作为单位
         $wxOrderData->SetBody('零食商贩');
         $wxOrderData->SetOpenid($openid);
-        $wxOrderData->SetNotify_url('');//回调接口
+        $wxOrderData->SetNotify_url(config('secure.pay_back_url'));//回调接口
 
         return $this->getPaySignature($wxOrderData);
     }
