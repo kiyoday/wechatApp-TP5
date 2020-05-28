@@ -14,14 +14,14 @@ class OrderPlace extends BaseValidate
     ];
 
     protected $singleRule = [
-        'products' => 'require|isPostiveInteger',
+        'product_id' => 'require|isPostiveInteger',
         'count' => 'require|isPostiveInteger',
     ];
 
     protected function checkProducts($values){
         if(!is_array($values)){
             throw new ParameterExcption([
-                'msg' => '需要是数组',
+                'msg' => $values.'需要是数组',
             ]);
         }
         if(empty($values)){
@@ -30,7 +30,7 @@ class OrderPlace extends BaseValidate
             ]);
         }
         foreach ($values as $value){
-            $this->checkProducts($value);
+            $this->checkProduct($value);
         }
         return true;
     }

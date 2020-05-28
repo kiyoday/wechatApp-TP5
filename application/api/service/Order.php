@@ -33,7 +33,7 @@ class Order
         }
         //开始创建订单
         $orderSnap = $this->snapOrder($status);
-        $order = createOrder($orderSnap);
+        $order = $this->createOrder($orderSnap);
         $order['pass'] = true;
         return $order;
     }
@@ -75,8 +75,8 @@ class Order
     public static function makeOrderNo(){
         $yCode = array('A','B','C','D','E','F','G','H','I','J');
         $orderSn =
-            $yCode[intval(data('Y')) - 2017] . strtoupper(dechex(data('m'))) .
-            data('d') . substr(time() - 5) . substr(microtime(),2,5) .
+            $yCode[intval(date('Y')) - 2017] . strtoupper(dechex(date('m'))) .
+            date('d') . substr(time(), - 5) . substr(microtime(),2,5) .
             sprintf('%02d',rand(0, 99));
         return $orderSn;
     }
@@ -101,6 +101,7 @@ class Order
         if(count($this->products) > 1){
             $snap['snapName'] .= '等';
         }
+        return $snap;
     }
 
     private function getUserAddress(){
@@ -176,11 +177,11 @@ class Order
 
     //根据订单信息查找真实的商品信息
     private function getProductsByOrder($oProducts){
+        $oPIDs = [];
         foreach($oProducts as $item){
             array_push($oPIDs, $item['product_id']);
         }
         $products = Product::all($oPIDs)
-            ->visible(['id','price','stock','name','main_ing_url'])
             ->toArray();
         return $products;
     }

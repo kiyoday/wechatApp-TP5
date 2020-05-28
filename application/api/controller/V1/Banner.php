@@ -19,7 +19,7 @@ class Banner
     public function getBanner($id){
         (new IDMustBePostiveInt())->goCheck();//拦截器
         $banner = BannerModel::getBannerByID($id);
-        if($banner->isEmpty()){
+        if(!$banner){
             throw new BannerMissException();
         }
         $c = config('setting.img_prefix');

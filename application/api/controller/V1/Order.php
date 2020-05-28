@@ -3,6 +3,7 @@
 
 namespace app\api\controller\V1;
 
+use app\api\controller\BaseController;
 use app\api\service\Token as TokenService;
 use app\api\validate\OrderPlace;
 use app\api\service\Order as OrderService;
@@ -11,7 +12,7 @@ use app\lib\exception\ForbiddenException;
 use app\lib\exception\TokenException;
 use think\Controller;
 
-class Order extends Controller
+class Order extends BaseController
 {
     //用户在选择商品后，向api提交包含它所选择商品的相关信息
     //api在接受到信息后，需要检查订单相关商品的库存量
