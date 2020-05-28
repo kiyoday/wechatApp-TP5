@@ -4,7 +4,7 @@
 namespace app\lib\enum;
 
 
-class OrderStatusEum
+class OrderStatusEnum
 {
     //待支付
     const UNPAID = 1;
