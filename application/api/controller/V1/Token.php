@@ -4,8 +4,12 @@
 namespace app\api\controller\V1;
 
 
+use app\api\service\AppToken;
 use app\api\service\UserToken;
+use app\api\validate\AppTokenGet;
 use app\api\validate\TokenGet;
+use app\lib\exception\ParameterExcption;
+use \app\api\service\Token as TokenService;
 
 class Token
 {
@@ -15,6 +19,31 @@ class Token
         $token = $ut->get();
         return [//返回json格式
             'token'=>$token
+        ];
+    }
+    public function verifyToken($token='')
+    {
+        if(!$token){
+            throw new ParameterExcption([
+                'token不允许为空'
+            ]);
+        }
+        $valid = TokenService::verifyToken($token);
+        return [
+            'isValid' => $valid
+        ];
+    }
+    /**
+     * 第三方应用获取令牌
+     * @url /app_token?
+     * @POST ac=:ac se=:secret
+     */
+    public function getAppToken($ac='', $se=''){
+        (new AppTokenGet())->goCheck();
+        $app = new AppToken();
+        $token = $app->get($ac, $se);
+        return [
+            'token' => $token
         ];
     }
 }

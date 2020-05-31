@@ -72,7 +72,13 @@ class Token
             throw new ForbiddenException();
         }
     }
-
+    /**
+     * 检查操作UID是否合法
+     * @param $checkedUID
+     * @return bool
+     * @throws Exception
+     * @throws ParameterException
+     */
     public static function isValidOperate($checkedUID){
         if(!$checkedUID){
             throw new Exception('检测UID时必须传入一个UID');
@@ -82,5 +88,15 @@ class Token
             return true;
         }
         return false;
+    }
+
+    public static function verifyToken($token)
+    {
+        $exist = Cache::get($token);
+        if($exist){
+            return true;
+        }else{
+            return false;
+        }
     }
 }
