@@ -34,4 +34,15 @@ class Order extends BaseModel
                         ->paginate($size, true, ['page'=>$page]);
         return $pagingDate;
     }
+
+    //用户订单列表 分页
+    public static function getSummaryByPage($page=1, $size=20){
+        $pagingData = self::order('create_time desc')
+            ->paginate($size, true, ['page' => $page]);
+        return $pagingData ;
+    }
+
+    public function products(){
+        return $this->belongsToMany('Product', 'order_product', 'product_id', 'order_id');
+    }
 }
